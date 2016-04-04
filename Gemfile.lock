@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ruby-progressbar (1.7.5)
+    thread_safe (0.3.5-java)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  ruby-progressbar
+  thread_safe
+
+BUNDLED WITH
+   1.11.2
