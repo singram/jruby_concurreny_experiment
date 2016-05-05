@@ -42,16 +42,19 @@ class PeopleDownloader
     @documents = Concurrent::Array.new
   end
 
-
-
+  EXECUTOR_QUEUE_LIMIT = 30
+  THREAD_POOL = 15
   # main method to define a fixed thread pool and process all indexes
   def work
-    executor = java.util.concurrent.Executors::newFixedThreadPool 15
+    executor = java.util.concurrent.Executors::newFixedThreadPool THREAD_POOL
     # Pump the requests into the queue for the thread pool to act on.
     while !@people.empty?
-      executor.submit( PersonWorker.new(self, @people.pop) )
-      break if executor.is_shutdown
+      if executor.queue.size < EXECUTOR_QUEUE_LIMIT
+        executor.submit( PersonWorker.new(self, @people.pop) )
+        break if executor.is_shutdown
+      end
     end
+    @people_progressbar.log("Executor pool populated")
     # Block until queue is drained
     while !executor.queue.empty? do
       sleep 1
